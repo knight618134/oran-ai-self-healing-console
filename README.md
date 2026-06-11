@@ -13,6 +13,21 @@ This is not a generic chatbot demo. It connects telecom operations concepts with
 - Recovery Agent: tool-calling step trace and human approval gate
 - Knowledge Base: RAG-style SOP / runbook / alarm guide search
 
+## Why This Is an AI Application
+
+The AI layer is not just a label in the UI. The target workflow is:
+
+```text
+O-RAN alarms + KPI + topology + config changes
+  -> RAG retrieves SOP / runbook evidence
+  -> Agent creates a root-cause diagnosis and recovery plan
+  -> Human approval gate controls risky actions
+  -> NemoClaw can execute allowed tools in a sandbox
+  -> Gmail / Discord / OpenProject notifications are recorded in the trace
+```
+
+This makes the project a practical AI application frontend: it turns LLM/RAG/Agent output into reviewable operations workflow.
+
 ## Local Demo
 
 Open the static app directly:
@@ -43,7 +58,15 @@ Built a 5G O-RAN AI self-healing operations console PoC that combines KPI monito
 ## Next Steps
 
 - Migrate to Next.js + TypeScript
+- Replace the CSS topology with React Flow / XYFlow for UE, gNB, RU, DU, CU, Near-RT RIC, Non-RT RIC, and SMO nodes
 - Add mock API and WebSocket / SSE event streaming
 - Connect a local RAG prototype for SOP markdown search
+- Add Agent tools for Gmail, Discord, OpenProject, KPI lookup, and incident report generation
 - Add Cypress E2E tests for the incident-to-recovery workflow
 - Deploy with GitHub Pages
+
+## Project Docs
+
+- [Product Research Brief](docs/product-research-brief.md)
+- [Architecture Notes](docs/architecture-notes.md)
+- [HackMD Sync Guide](docs/hackmd-sync.md)

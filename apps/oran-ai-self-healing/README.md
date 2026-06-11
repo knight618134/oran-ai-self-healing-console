@@ -45,7 +45,9 @@ http://localhost:4173
 ## 下一步
 
 - 升級為 Next.js + TypeScript
+- 使用 React Flow / XYFlow 重建 UE / gNB / RU / DU / CU / RIC / SMO 拓樸
 - 導入 WebSocket / SSE 模擬即時告警
 - 增加 mock API layer，讓資料結構更接近真實 EMS / RIC 平台
 - 串接本地 RAG prototype，支援 SOP markdown 檢索
+- 加入 NemoClaw controlled tools，模擬 Gmail / Discord / OpenProject 通知與任務建立
 - 增加 Cypress E2E 測試，展示維運流程測試能力
