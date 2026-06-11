@@ -7,7 +7,7 @@ This is not a generic chatbot demo. It connects telecom operations concepts with
 ## Demo Scope
 
 - Dashboard: network health, active alarms, latency, self-heal success rate
-- Topology: SMO / Non-RT RIC / Near-RT RIC / CU / DU / RU node view
+- Topology: SMO / Non-RT RIC / Near-RT RIC / CU / DU / RU / gNB / UE node view with interface labels and AI impact path
 - Alarm Center: fault management queue with severity filtering
 - AI Diagnosis: KPI and alarm evidence summarized into root-cause analysis
 - Recovery Agent: tool-calling step trace, human approval gate, and Gmail / Discord / OpenProject mock tools

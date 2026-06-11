@@ -68,7 +68,11 @@
             <section class="network-map panel">
               <div class="panel-header">
                 <h2>O-RAN Topology</h2>
-                <span>CU / DU / RU / RIC</span>
+                <div class="segmented" id="topologyMode">
+                  <button class="active" data-mode="service" type="button">Service Path</button>
+                  <button data-mode="ric" type="button">RIC Control</button>
+                  <button data-mode="impact" type="button">Impact Only</button>
+                </div>
               </div>
               <div class="topology-canvas" id="topologyCanvas"></div>
             </section>
@@ -78,6 +82,13 @@
                 <span id="selectedNodeLabel">DU-TPE-07</span>
               </div>
               <div class="node-detail" id="nodeDetail"></div>
+            </section>
+            <section class="panel topology-full">
+              <div class="panel-header">
+                <h2>AI Impact Path</h2>
+                <span id="impactModeLabel">Service degradation path</span>
+              </div>
+              <div class="impact-summary" id="impactSummary"></div>
             </section>
           </div>
         </section>

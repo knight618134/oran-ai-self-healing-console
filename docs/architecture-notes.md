@@ -152,3 +152,24 @@ Mock tools:
 - `write_incident_report`
 
 This keeps the demo safe because no external side effects are executed by the browser. The UI only demonstrates the product workflow that a future NemoClaw runtime would execute through controlled tools.
+
+## Implemented Static Topology Flow
+
+The current topology is still framework-free, but the data model now mirrors the shape expected by React Flow:
+
+- UE Group
+- gNB
+- RU
+- DU
+- CU
+- Near-RT RIC
+- Non-RT RIC
+- SMO
+
+The UI supports three topology modes:
+
+- `Service Path`: highlights the degraded service chain down to affected UE groups.
+- `RIC Control`: highlights A1 policy, Near-RT RIC control, and downstream DU impact.
+- `Impact Only`: narrows the view to DU/RU/gNB/UE verification targets.
+
+Each node includes status, layer, latency, packet loss, active alarms, and an AI summary. This makes the next React Flow migration mostly a rendering change rather than a product-model redesign.

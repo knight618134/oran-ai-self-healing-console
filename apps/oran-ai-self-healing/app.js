@@ -3,6 +3,7 @@ const appState = {
   severityFilter: "all",
   agentRunning: false,
   approval: "pending",
+  topologyMode: "service",
 };
 
 const metrics = [
@@ -60,23 +61,142 @@ const alarms = [
 ];
 
 const nodes = [
-  { id: "SMO-01", type: "SMO", x: 45, y: 46, status: "normal", cpu: "41%", latency: "8ms", alarms: 0 },
-  { id: "RIC-NONRT-01", type: "Non-RT RIC", x: 245, y: 46, status: "normal", cpu: "52%", latency: "15ms", alarms: 1 },
-  { id: "RIC-NEAR-01", type: "Near-RT RIC", x: 245, y: 208, status: "major", cpu: "73%", latency: "44ms", alarms: 3 },
-  { id: "CU-TPE-03", type: "CU", x: 455, y: 128, status: "normal", cpu: "48%", latency: "19ms", alarms: 0 },
-  { id: "DU-TPE-07", type: "DU", x: 455, y: 312, status: "critical", cpu: "81%", latency: "57ms", alarms: 5 },
-  { id: "RU-TPE-19", type: "RU", x: 245, y: 386, status: "major", cpu: "62%", latency: "33ms", alarms: 2 },
-  { id: "UE-GROUP-A", type: "UE Group", x: 45, y: 386, status: "normal", cpu: "n/a", latency: "61ms", alarms: 0 },
+  {
+    id: "SMO-01",
+    type: "SMO",
+    layer: "Service Management",
+    x: 60,
+    y: 52,
+    status: "normal",
+    cpu: "41%",
+    latency: "8ms",
+    packetLoss: "0.1%",
+    alarms: 0,
+    aiSummary: "Policy guardrails are healthy. No direct service impact detected.",
+  },
+  {
+    id: "RIC-NONRT-01",
+    type: "Non-RT RIC",
+    layer: "rApp / Policy",
+    x: 260,
+    y: 52,
+    status: "normal",
+    cpu: "52%",
+    latency: "15ms",
+    packetLoss: "0.2%",
+    alarms: 1,
+    aiSummary: "Long-cycle policy recommendations are available for rollback review.",
+  },
+  {
+    id: "RIC-NEAR-01",
+    type: "Near-RT RIC",
+    layer: "xApp Control",
+    x: 260,
+    y: 220,
+    status: "major",
+    cpu: "73%",
+    latency: "44ms",
+    packetLoss: "0.8%",
+    alarms: 3,
+    aiSummary: "Control-loop latency is correlated with recent handover policy changes.",
+  },
+  {
+    id: "CU-TPE-03",
+    type: "CU",
+    layer: "Central Unit",
+    x: 490,
+    y: 142,
+    status: "normal",
+    cpu: "48%",
+    latency: "19ms",
+    packetLoss: "0.4%",
+    alarms: 0,
+    aiSummary: "CU remains healthy, but downstream DU congestion may affect session continuity.",
+  },
+  {
+    id: "DU-TPE-07",
+    type: "DU",
+    layer: "Distributed Unit",
+    x: 490,
+    y: 330,
+    status: "critical",
+    cpu: "81%",
+    latency: "57ms",
+    packetLoss: "2.8%",
+    alarms: 5,
+    aiSummary: "Primary impact node. Packet loss and PRB pressure rose during the incident window.",
+  },
+  {
+    id: "RU-TPE-19",
+    type: "RU",
+    layer: "Radio Unit",
+    x: 260,
+    y: 420,
+    status: "major",
+    cpu: "62%",
+    latency: "33ms",
+    packetLoss: "1.5%",
+    alarms: 2,
+    aiSummary: "RU sync jitter may amplify packet loss but is likely secondary.",
+  },
+  {
+    id: "GNB-TPE-A",
+    type: "gNB",
+    layer: "Access Site",
+    x: 60,
+    y: 300,
+    status: "major",
+    cpu: "68%",
+    latency: "49ms",
+    packetLoss: "1.9%",
+    alarms: 4,
+    aiSummary: "Service-level gNB view shows degraded user-plane performance.",
+  },
+  {
+    id: "UE-GROUP-A",
+    type: "UE Group",
+    layer: "Affected Users",
+    x: 60,
+    y: 480,
+    status: "warning",
+    cpu: "n/a",
+    latency: "61ms",
+    packetLoss: "2.1%",
+    alarms: 0,
+    aiSummary: "Factory-A URLLC devices are experiencing latency budget pressure.",
+  },
 ];
 
 const links = [
-  ["SMO-01", "RIC-NONRT-01"],
-  ["RIC-NONRT-01", "RIC-NEAR-01"],
-  ["RIC-NEAR-01", "CU-TPE-03"],
-  ["CU-TPE-03", "DU-TPE-07"],
-  ["DU-TPE-07", "RU-TPE-19"],
-  ["RU-TPE-19", "UE-GROUP-A"],
+  { from: "SMO-01", to: "RIC-NONRT-01", label: "A1 policy", modes: ["ric"] },
+  { from: "RIC-NONRT-01", to: "RIC-NEAR-01", label: "policy intent", modes: ["ric"] },
+  { from: "RIC-NEAR-01", to: "CU-TPE-03", label: "E2 control", modes: ["ric", "service"] },
+  { from: "CU-TPE-03", to: "DU-TPE-07", label: "F1", modes: ["service", "impact"] },
+  { from: "DU-TPE-07", to: "RU-TPE-19", label: "Open Fronthaul", modes: ["service", "impact"] },
+  { from: "RU-TPE-19", to: "GNB-TPE-A", label: "cell coverage", modes: ["service", "impact"] },
+  { from: "GNB-TPE-A", to: "UE-GROUP-A", label: "URLLC slice", modes: ["service", "impact"] },
 ];
+
+const topologyModes = {
+  service: {
+    label: "Service degradation path",
+    focusNodes: ["RIC-NEAR-01", "CU-TPE-03", "DU-TPE-07", "RU-TPE-19", "GNB-TPE-A", "UE-GROUP-A"],
+    summary:
+      "AI traces the service impact from Near-RT RIC control-loop latency through CU/DU/RU and down to the Factory-A UE group.",
+  },
+  ric: {
+    label: "RIC control loop",
+    focusNodes: ["SMO-01", "RIC-NONRT-01", "RIC-NEAR-01", "CU-TPE-03", "DU-TPE-07"],
+    summary:
+      "RIC mode highlights the A1 policy path, Near-RT RIC xApp loop, and the downstream DU node affected by handover threshold drift.",
+  },
+  impact: {
+    label: "Critical impact only",
+    focusNodes: ["DU-TPE-07", "RU-TPE-19", "GNB-TPE-A", "UE-GROUP-A"],
+    summary:
+      "Impact mode narrows the view to the degraded DU/RU/gNB/UE chain that should be monitored during recovery verification.",
+  },
+};
 
 const evidence = [
   { time: "09:33", title: "SLA breach detected", text: "URLLC slice latency exceeded 35 ms budget for 5 consecutive samples." },
@@ -204,8 +324,12 @@ function renderIncidents() {
 function renderTopology() {
   const canvas = document.getElementById("topologyCanvas");
   const nodeById = Object.fromEntries(nodes.map((node) => [node.id, node]));
+  const mode = topologyModes[appState.topologyMode];
   const linkMarkup = links
-    .map(([fromId, toId]) => {
+    .filter((link) => link.modes.includes(appState.topologyMode))
+    .map((link) => {
+      const fromId = link.from;
+      const toId = link.to;
       const from = nodeById[fromId];
       const to = nodeById[toId];
       const x1 = from.x + 56;
@@ -216,18 +340,34 @@ function renderTopology() {
       const dy = y2 - y1;
       const length = Math.sqrt(dx * dx + dy * dy);
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-      return `<div class="link" style="left:${x1}px;top:${y1}px;width:${length}px;transform:rotate(${angle}deg)"></div>`;
+      const labelX = (x1 + x2) / 2;
+      const labelY = (y1 + y2) / 2;
+      return `
+        <div class="link active-link" style="left:${x1}px;top:${y1}px;width:${length}px;transform:rotate(${angle}deg)"></div>
+        <div class="link-label" style="left:${labelX}px;top:${labelY}px">${link.label}</div>
+      `;
     })
     .join("");
 
   const nodeMarkup = nodes
     .map(
-      (node) => `
-        <button class="node ${node.status !== "normal" ? "problem" : ""}" style="left:${node.x}px;top:${node.y}px" data-node="${node.id}" type="button">
+      (node) => {
+        const inFocus = mode.focusNodes.includes(node.id);
+        const nodeClass = [
+          "node",
+          node.status !== "normal" ? "problem" : "",
+          inFocus ? "in-focus" : "dimmed",
+          node.id === appState.selectedNodeId ? "selected" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+        return `
+        <button class="${nodeClass}" style="left:${node.x}px;top:${node.y}px" data-node="${node.id}" type="button">
           <strong>${node.id}</strong>
           <small>${node.type}</small>
         </button>
-      `,
+      `;
+      },
     )
     .join("");
 
@@ -239,6 +379,7 @@ function renderTopology() {
     });
   });
   renderNodeDetail();
+  renderImpactSummary();
 }
 
 function renderNodeDetail() {
@@ -247,9 +388,32 @@ function renderNodeDetail() {
   document.getElementById("nodeDetail").innerHTML = `
     <div class="node-row"><span>Status</span><strong>${node.status}</strong></div>
     <div class="node-row"><span>Type</span><strong>${node.type}</strong></div>
+    <div class="node-row"><span>Layer</span><strong>${node.layer}</strong></div>
     <div class="node-row"><span>CPU</span><strong>${node.cpu}</strong></div>
     <div class="node-row"><span>Latency</span><strong>${node.latency}</strong></div>
+    <div class="node-row"><span>Packet loss</span><strong>${node.packetLoss}</strong></div>
     <div class="node-row"><span>Active alarms</span><strong>${node.alarms}</strong></div>
+    <div class="node-ai-summary">
+      <span class="eyebrow">AI Summary</span>
+      <p>${node.aiSummary}</p>
+    </div>
+  `;
+}
+
+function renderImpactSummary() {
+  const mode = topologyModes[appState.topologyMode];
+  document.getElementById("impactModeLabel").textContent = mode.label;
+  document.getElementById("impactSummary").innerHTML = `
+    <article class="impact-card">
+      <span class="status-pill major">${mode.label}</span>
+      <strong>${mode.summary}</strong>
+      <p>Highlighted nodes: ${mode.focusNodes.join(" -> ")}</p>
+    </article>
+    <article class="impact-card">
+      <span class="status-pill critical">Primary risk</span>
+      <strong>DU-TPE-07 packet loss is the current recovery anchor.</strong>
+      <p>Recovery verification should track p95 latency, packet loss, PRB usage, and handover failure rate before any production apply.</p>
+    </article>
   `;
 }
 
@@ -444,6 +608,14 @@ function wireInteractions() {
     appState.severityFilter = button.dataset.filter;
     document.querySelectorAll("#severityFilter button").forEach((item) => item.classList.toggle("active", item === button));
     renderAlarms();
+  });
+
+  document.getElementById("topologyMode").addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-mode]");
+    if (!button) return;
+    appState.topologyMode = button.dataset.mode;
+    document.querySelectorAll("#topologyMode button").forEach((item) => item.classList.toggle("active", item === button));
+    renderTopology();
   });
 
   document.getElementById("simulateBtn").addEventListener("click", () => {

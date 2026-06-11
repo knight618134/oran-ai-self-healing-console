@@ -221,8 +221,8 @@ createOpenProjectTask({ projectId, subject, description, severity })
 ### Phase 3：React Flow Topology
 
 - [ ] 使用 React Flow 建 UE/gNB/RU/DU/CU/RIC/SMO 拓樸
-- [ ] 支援 node inspector
-- [ ] 支援 alarm impact path 高亮
+- [x] 支援 node inspector
+- [x] 支援 alarm impact path 高亮
 - [ ] 支援 topology filter
 
 ### Phase 4：AI Workflow
