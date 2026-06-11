@@ -10,7 +10,7 @@ This is not a generic chatbot demo. It connects telecom operations concepts with
 - Topology: SMO / Non-RT RIC / Near-RT RIC / CU / DU / RU node view
 - Alarm Center: fault management queue with severity filtering
 - AI Diagnosis: KPI and alarm evidence summarized into root-cause analysis
-- Recovery Agent: tool-calling step trace and human approval gate
+- Recovery Agent: tool-calling step trace, human approval gate, and Gmail / Discord / OpenProject mock tools
 - Knowledge Base: RAG-style SOP / runbook / alarm guide search
 
 ## Why This Is an AI Application
@@ -62,6 +62,7 @@ Built a 5G O-RAN AI self-healing operations console PoC that combines KPI monito
 - Add mock API and WebSocket / SSE event streaming
 - Connect a local RAG prototype for SOP markdown search
 - Add Agent tools for Gmail, Discord, OpenProject, KPI lookup, and incident report generation
+- Export an incident report artifact from approved Agent runs
 - Add Cypress E2E tests for the incident-to-recovery workflow
 - Deploy with GitHub Pages
 

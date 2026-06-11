@@ -127,17 +127,31 @@
             <section class="panel">
               <div class="panel-header">
                 <h2>Human Approval Gate</h2>
-                <span>Policy change requires review</span>
+                <span id="approvalStatus">Policy change requires review</span>
               </div>
-              <div class="approval-card">
-                <span class="status-pill warning">Pending Approval</span>
+              <div class="approval-card" id="approvalCard">
+                <span class="status-pill warning" id="approvalPill">Pending Approval</span>
                 <h3>Adjust xApp handover threshold</h3>
                 <p>Temporarily relax A3 offset from 3 dB to 2 dB for DU-TPE-07 serving cells during congestion window.</p>
                 <div class="approval-actions">
-                  <button class="secondary-button" type="button">Reject</button>
-                  <button class="primary-button" type="button">Approve Dry Run</button>
+                  <button class="secondary-button" id="rejectPlanBtn" type="button">Reject</button>
+                  <button class="primary-button" id="approvePlanBtn" type="button">Approve Dry Run</button>
                 </div>
               </div>
+            </section>
+            <section class="panel recovery-full">
+              <div class="panel-header">
+                <h2>Controlled Tool Executions</h2>
+                <span>NemoClaw sandbox mock</span>
+              </div>
+              <div class="tool-grid" id="toolGrid"></div>
+            </section>
+            <section class="panel recovery-full">
+              <div class="panel-header">
+                <h2>Incident Report</h2>
+                <span>Generated after approval</span>
+              </div>
+              <div class="report-card" id="incidentReport"></div>
             </section>
           </div>
         </section>

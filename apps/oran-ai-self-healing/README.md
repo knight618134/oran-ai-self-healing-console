@@ -10,7 +10,7 @@
 - Topology：SMO / Non-RT RIC / Near-RT RIC / CU / DU / RU 節點拓樸
 - Alarm Center：Fault Management queue 與嚴重度篩選
 - AI Diagnosis：根據 KPI、告警與 SOP evidence 做 root cause analysis
-- Recovery Agent：展示 tool calling、step trace、human approval gate
+- Recovery Agent：展示 tool calling、step trace、human approval gate、Gmail / Discord / OpenProject mock tools
 - Knowledge Base：RAG 檢索 SOP、runbook、alarm guide
 
 ## 如何打開
@@ -50,4 +50,5 @@ http://localhost:4173
 - 增加 mock API layer，讓資料結構更接近真實 EMS / RIC 平台
 - 串接本地 RAG prototype，支援 SOP markdown 檢索
 - 加入 NemoClaw controlled tools，模擬 Gmail / Discord / OpenProject 通知與任務建立
+- 加入 incident report export，讓 Agent 結果能沉澱成維運紀錄
 - 增加 Cypress E2E 測試，展示維運流程測試能力

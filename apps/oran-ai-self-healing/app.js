@@ -2,6 +2,7 @@ const appState = {
   selectedNodeId: "DU-TPE-07",
   severityFilter: "all",
   agentRunning: false,
+  approval: "pending",
 };
 
 const metrics = [
@@ -89,7 +90,43 @@ const baseAgentSteps = [
   { tool: "get_kpi_snapshot", status: "done", text: "Correlated DU packet loss, RIC latency, and handover failure rate." },
   { tool: "query_knowledge_base", status: "done", text: "Matched SOP: handover policy rollback during congestion window." },
   { tool: "create_recovery_plan", status: "running", text: "Preparing reversible dry-run action with approval gate." },
+  { tool: "request_human_approval", status: "approval_required", text: "Policy adjustment and external notifications require operator approval." },
   { tool: "verify_recovery_result", status: "pending", text: "Waiting for simulated dry-run metrics." },
+];
+
+const toolExecutions = [
+  {
+    id: "tool-discord",
+    tool: "send_discord_alert",
+    target: "#noc-uran-alerts",
+    risk: "low",
+    waiting: "Waiting for approval",
+    done: "Posted incident summary and evidence links to NOC channel.",
+  },
+  {
+    id: "tool-gmail",
+    tool: "send_gmail_alert",
+    target: "on-call engineer",
+    risk: "medium",
+    waiting: "Waiting for approval",
+    done: "Sent on-call email with root cause hypothesis and dry-run plan.",
+  },
+  {
+    id: "tool-openproject",
+    tool: "create_openproject_task",
+    target: "RAN Ops / Incident",
+    risk: "medium",
+    waiting: "Waiting for approval",
+    done: "Created task OP-1842 for follow-up verification and rollback review.",
+  },
+  {
+    id: "tool-report",
+    tool: "write_incident_report",
+    target: "incident timeline",
+    risk: "low",
+    waiting: "Waiting for approval",
+    done: "Generated post-incident report draft with KPI evidence.",
+  },
 ];
 
 const kbItems = [
@@ -267,10 +304,24 @@ function renderDiagnosis() {
 }
 
 function renderAgentSteps() {
-  const steps = appState.agentRunning
-    ? baseAgentSteps.map((step, index) => (index < 4 ? { ...step, status: "done" } : { ...step, status: "running" }))
-    : baseAgentSteps;
-  document.getElementById("agentStatus").textContent = appState.agentRunning ? "Running dry-run" : "Ready";
+  const steps = baseAgentSteps.map((step, index) => {
+    if (!appState.agentRunning) return step;
+    if (appState.approval === "approved") {
+      return { ...step, status: "done" };
+    }
+    if (appState.approval === "rejected") {
+      return index < 4 ? { ...step, status: "done" } : { ...step, status: "pending" };
+    }
+    if (index < 4) return { ...step, status: "done" };
+    if (step.tool === "request_human_approval") return step;
+    return { ...step, status: "pending" };
+  });
+  const statusText = {
+    pending: appState.agentRunning ? "Approval required" : "Ready",
+    approved: "Dry-run approved",
+    rejected: "Plan rejected",
+  };
+  document.getElementById("agentStatus").textContent = statusText[appState.approval];
   document.getElementById("agentSteps").innerHTML = steps
     .map(
       (step) => `
@@ -284,6 +335,80 @@ function renderAgentSteps() {
       `,
     )
     .join("");
+}
+
+function renderApproval() {
+  const approvalPill = document.getElementById("approvalPill");
+  const approvalStatus = document.getElementById("approvalStatus");
+  const approveButton = document.getElementById("approvePlanBtn");
+  const rejectButton = document.getElementById("rejectPlanBtn");
+
+  const labels = {
+    pending: ["Pending Approval", "Policy change requires review", "warning"],
+    approved: ["Approved", "Dry-run notification tools released", "done"],
+    rejected: ["Rejected", "External tools blocked", "critical"],
+  };
+  const [pillText, statusText, pillClass] = labels[appState.approval];
+  approvalPill.textContent = pillText;
+  approvalPill.className = `status-pill ${pillClass}`;
+  approvalStatus.textContent = statusText;
+  approveButton.disabled = appState.approval === "approved";
+  rejectButton.disabled = appState.approval === "rejected";
+}
+
+function renderToolExecutions() {
+  const grid = document.getElementById("toolGrid");
+  grid.innerHTML = toolExecutions
+    .map((item) => {
+      const status = appState.approval === "approved" ? "done" : appState.approval === "rejected" ? "blocked" : "pending";
+      const detail = appState.approval === "approved" ? item.done : appState.approval === "rejected" ? "Blocked by operator decision." : item.waiting;
+      const pillClass = status === "done" ? "done" : status === "blocked" ? "critical" : "warning";
+      return `
+        <article class="tool-card">
+          <span class="status-pill ${pillClass}">${status}</span>
+          <strong>${item.tool}</strong>
+          <span class="meta">${item.target} · risk: ${item.risk}</span>
+          <p>${detail}</p>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function renderIncidentReport() {
+  const report = document.getElementById("incidentReport");
+  if (appState.approval === "approved") {
+    report.innerHTML = `
+      <span class="status-pill done">Report Ready</span>
+      <h3>URLLC SLA breach / DU-TPE-07 packet loss</h3>
+      <p><strong>Root cause hypothesis:</strong> handover policy drift increased control-loop pressure during a DU congestion window.</p>
+      <p><strong>Actions:</strong> Discord alert sent, Gmail on-call notice sent, OpenProject task OP-1842 created, dry-run verification started.</p>
+      <p><strong>Verification:</strong> monitor p95 latency, packet loss, and handover failure rate for 10 minutes before production apply.</p>
+    `;
+    return;
+  }
+
+  if (appState.approval === "rejected") {
+    report.innerHTML = `
+      <span class="status-pill critical">Report Blocked</span>
+      <h3>Operator rejected recovery plan</h3>
+      <p>External notification and task tools were blocked. The incident remains open for manual RAN engineer review.</p>
+    `;
+    return;
+  }
+
+  report.innerHTML = `
+    <span class="status-pill warning">Draft Waiting</span>
+    <h3>Incident report will be generated after approval</h3>
+    <p>The Agent has prepared a reversible dry-run plan, but external tool calls are held until the operator approves.</p>
+  `;
+}
+
+function renderRecoveryWorkflow() {
+  renderAgentSteps();
+  renderApproval();
+  renderToolExecutions();
+  renderIncidentReport();
 }
 
 function renderKnowledge() {
@@ -329,11 +454,22 @@ function wireInteractions() {
 
   document.getElementById("runAgentBtn").addEventListener("click", () => {
     appState.agentRunning = true;
+    appState.approval = "pending";
     activateView("recovery");
-    renderAgentSteps();
+    renderRecoveryWorkflow();
   });
 
   document.getElementById("kbSearchBtn").addEventListener("click", renderKnowledge);
+  document.getElementById("approvePlanBtn").addEventListener("click", () => {
+    appState.agentRunning = true;
+    appState.approval = "approved";
+    renderRecoveryWorkflow();
+  });
+  document.getElementById("rejectPlanBtn").addEventListener("click", () => {
+    appState.agentRunning = true;
+    appState.approval = "rejected";
+    renderRecoveryWorkflow();
+  });
 }
 
 function init() {
@@ -343,7 +479,7 @@ function init() {
   renderTopology();
   renderAlarms();
   renderDiagnosis();
-  renderAgentSteps();
+  renderRecoveryWorkflow();
   renderKnowledge();
   wireInteractions();
 }

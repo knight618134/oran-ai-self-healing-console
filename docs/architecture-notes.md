@@ -131,3 +131,24 @@ type AgentStep = {
 6. Human approval is required before any external action.
 7. NemoClaw executes mock notification tools.
 8. The frontend shows verification metrics and an incident report.
+
+## Implemented Static Demo Flow
+
+The current static app now includes a browser-only simulation of the approval and tool-execution flow:
+
+```text
+Run Recovery Agent
+  -> Agent steps reach request_human_approval
+  -> operator approves or rejects
+  -> mock tools update status
+  -> incident report draft is generated or blocked
+```
+
+Mock tools:
+
+- `send_discord_alert`
+- `send_gmail_alert`
+- `create_openproject_task`
+- `write_incident_report`
+
+This keeps the demo safe because no external side effects are executed by the browser. The UI only demonstrates the product workflow that a future NemoClaw runtime would execute through controlled tools.

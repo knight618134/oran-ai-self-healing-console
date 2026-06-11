@@ -227,11 +227,12 @@ createOpenProjectTask({ projectId, subject, description, severity })
 
 ### Phase 4：AI Workflow
 
-- [ ] Agent step trace component
+- [x] Agent step trace component
 - [ ] RAG evidence panel
 - [ ] Recovery plan diff
-- [ ] Human approval gate
-- [ ] Mock Discord / Gmail / OpenProject tools
+- [x] Human approval gate
+- [x] Mock Discord / Gmail / OpenProject tools
+- [x] Incident report draft after approval
 
 ### Phase 5：NemoClaw Integration
 
