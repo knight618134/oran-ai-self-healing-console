@@ -77,8 +77,8 @@ python scripts/sync_to_hackmd.py \
 若已經建立 note，請把 note id 記錄在這裡：
 
 ```text
-product research note id: TBD
-publish link: TBD
+product research note id: hJiT66tNQHGiLnJk_1LC3A
+publish link: https://hackmd.io/@PGOQ-dmhQB2FiBLxI64sug/ByAWuLuWzg
 ```
 
 更新既有 note：
@@ -87,7 +87,7 @@ publish link: TBD
 export HACKMD_API_TOKEN="你的 token"
 python scripts/sync_to_hackmd.py \
   docs/product-research-brief.md \
-  --note-id "TBD"
+  --note-id "hJiT66tNQHGiLnJk_1LC3A"
 ```
 
 ## 4. 權限建議
