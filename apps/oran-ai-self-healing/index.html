@@ -123,6 +123,20 @@
               </div>
               <div class="timeline" id="timeline"></div>
             </section>
+            <section class="panel diagnosis-full">
+              <div class="panel-header">
+                <h2>RAG Evidence Pack</h2>
+                <span>Retrieved SOP / runbook citations</span>
+              </div>
+              <div class="rag-evidence" id="ragEvidence"></div>
+            </section>
+            <section class="panel diagnosis-full">
+              <div class="panel-header">
+                <h2>Retrieval Trace</h2>
+                <span>Why these sources were selected</span>
+              </div>
+              <div class="retrieval-trace" id="retrievalTrace"></div>
+            </section>
           </div>
         </section>
 
@@ -171,6 +185,13 @@
           <div class="knowledge-layout">
             <section class="panel">
               <div class="panel-header">
+                <h2>Index Health</h2>
+                <span>Local RAG mock</span>
+              </div>
+              <div class="index-health" id="indexHealth"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
                 <h2>RAG Knowledge Base</h2>
                 <span>SOP / runbook / alarm guide</span>
               </div>
@@ -189,7 +210,15 @@
 1. summarize the incident
 2. infer likely root causes
 3. propose reversible recovery actions
-4. mark actions requiring human approval</pre>
+4. attach source citations
+5. mark actions requiring human approval</pre>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Query Trace</h2>
+                <span>Search pipeline</span>
+              </div>
+              <div class="query-trace" id="queryTrace"></div>
             </section>
           </div>
         </section>

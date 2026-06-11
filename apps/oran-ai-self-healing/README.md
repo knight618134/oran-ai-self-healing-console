@@ -10,6 +10,7 @@
 - Topology：SMO / Non-RT RIC / Near-RT RIC / CU / DU / RU / gNB / UE 節點拓樸、介面標籤、AI impact path
 - Alarm Center：Fault Management queue 與嚴重度篩選
 - AI Diagnosis：根據 KPI、告警與 SOP evidence 做 root cause analysis
+- RAG Evidence：引用來源、匹配訊號、retrieval trace、index health
 - Recovery Agent：展示 tool calling、step trace、human approval gate、Gmail / Discord / OpenProject mock tools
 - Knowledge Base：RAG 檢索 SOP、runbook、alarm guide
 

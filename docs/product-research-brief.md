@@ -228,7 +228,7 @@ createOpenProjectTask({ projectId, subject, description, severity })
 ### Phase 4：AI Workflow
 
 - [x] Agent step trace component
-- [ ] RAG evidence panel
+- [x] RAG evidence panel
 - [ ] Recovery plan diff
 - [x] Human approval gate
 - [x] Mock Discord / Gmail / OpenProject tools

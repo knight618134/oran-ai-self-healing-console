@@ -153,6 +153,17 @@ Mock tools:
 
 This keeps the demo safe because no external side effects are executed by the browser. The UI only demonstrates the product workflow that a future NemoClaw runtime would execute through controlled tools.
 
+## Implemented Static RAG Flow
+
+The AI Diagnosis and Knowledge Base views now show a productized RAG workflow:
+
+- retrieval evidence cards with source id, match score, source section, matched signals, and support rationale
+- retrieval trace showing query expansion, hybrid search, reranking, and citation packing
+- knowledge index health with document, chunk, freshness, and coverage indicators
+- prompt template updated to require source citations and approval marking
+
+This makes the demo explainable: the UI shows why the AI made a recommendation, not only the final diagnosis text.
+
 ## Implemented Static Topology Flow
 
 The current topology is still framework-free, but the data model now mirrors the shape expected by React Flow:

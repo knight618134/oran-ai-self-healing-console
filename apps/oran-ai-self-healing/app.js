@@ -205,6 +205,53 @@ const evidence = [
   { time: "09:42", title: "Transport symptom correlated", text: "DU-TPE-07 packet loss and PRB pressure rose in the same window." },
 ];
 
+const ragEvidence = [
+  {
+    id: "SOP-ORAN-17",
+    title: "Near-RT RIC latency escalation",
+    source: "Runbook section 4.2",
+    score: 0.92,
+    matchedSignals: ["Near-RT RIC p95 latency", "DU packet loss", "recent xApp policy change"],
+    excerpt:
+      "If control-loop latency rises together with DU packet loss, inspect recent xApp policy deltas before transport reroute.",
+    supports: "Policy drift is a stronger first hypothesis than physical RU failure.",
+  },
+  {
+    id: "FM-GUIDE-31",
+    title: "DU packet loss triage",
+    source: "Fault Management handbook page 31",
+    score: 0.86,
+    matchedSignals: ["packet loss > 2%", "PRB pressure", "handover failure"],
+    excerpt:
+      "Packet loss above threshold with PRB pressure usually requires correlation with scheduler and handover parameters.",
+    supports: "DU-TPE-07 should be the recovery anchor and verification target.",
+  },
+  {
+    id: "PLAYBOOK-09",
+    title: "Reversible policy rollback",
+    source: "Self-healing playbook",
+    score: 0.81,
+    matchedSignals: ["human approval", "dry-run", "10-minute verification"],
+    excerpt:
+      "Apply reversible policy changes through dry-run first, then verify p95 latency and packet loss before production apply.",
+    supports: "Approval-gated dry-run is the safest Agent action.",
+  },
+];
+
+const retrievalTrace = [
+  { step: "query_expansion", status: "done", text: "Expanded incident query with DU packet loss, Near-RT RIC latency, xApp handover threshold, URLLC SLA breach." },
+  { step: "hybrid_search", status: "done", text: "Combined keyword matches with vector-like semantic scores across SOP, runbook, and FM guide chunks." },
+  { step: "evidence_rerank", status: "done", text: "Reranked chunks that mention both control-loop latency and DU packet loss in the same mitigation path." },
+  { step: "citation_pack", status: "done", text: "Selected three source chunks and attached matched signals for explainable diagnosis." },
+];
+
+const indexHealth = [
+  { label: "Documents", value: "18", note: "SOP, runbook, FM guide" },
+  { label: "Chunks", value: "426", note: "avg 420 chars" },
+  { label: "Freshness", value: "6h", note: "last incident sync" },
+  { label: "Coverage", value: "82%", note: "RIC / FM / recovery" },
+];
+
 const baseAgentSteps = [
   { tool: "get_alarm_history", status: "done", text: "Fetched 14 alarms in the last 30 minutes for Factory-A slice." },
   { tool: "get_kpi_snapshot", status: "done", text: "Correlated DU packet loss, RIC latency, and handover failure rate." },
@@ -465,6 +512,47 @@ function renderDiagnosis() {
       `,
     )
     .join("");
+
+  renderRagEvidence();
+  renderRetrievalTrace();
+}
+
+function renderRagEvidence() {
+  document.getElementById("ragEvidence").innerHTML = ragEvidence
+    .map(
+      (item) => `
+        <article class="evidence-card">
+          <div class="evidence-card-header">
+            <span class="status-pill normal">${Math.round(item.score * 100)}% match</span>
+            <span class="meta">${item.id}</span>
+          </div>
+          <strong>${item.title}</strong>
+          <span class="meta">${item.source}</span>
+          <p>${item.excerpt}</p>
+          <div class="signal-list">
+            ${item.matchedSignals.map((signal) => `<span>${signal}</span>`).join("")}
+          </div>
+          <p><strong>Supports:</strong> ${item.supports}</p>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+function renderRetrievalTrace() {
+  document.getElementById("retrievalTrace").innerHTML = retrievalTrace
+    .map(
+      (item) => `
+        <article class="trace-step">
+          <span class="status-pill ${item.status}">${item.status}</span>
+          <div>
+            <strong>${item.step}</strong>
+            <p>${item.text}</p>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
 }
 
 function renderAgentSteps() {
@@ -576,6 +664,18 @@ function renderRecoveryWorkflow() {
 }
 
 function renderKnowledge() {
+  document.getElementById("indexHealth").innerHTML = indexHealth
+    .map(
+      (item) => `
+        <article class="health-card">
+          <span>${item.label}</span>
+          <strong>${item.value}</strong>
+          <small>${item.note}</small>
+        </article>
+      `,
+    )
+    .join("");
+
   document.getElementById("kbResults").innerHTML = kbItems
     .map(
       (item) => `
@@ -583,6 +683,20 @@ function renderKnowledge() {
           <strong>${item.title}</strong>
           <span class="meta">${item.source}</span>
           <p>${item.text}</p>
+        </article>
+      `,
+    )
+    .join("");
+
+  document.getElementById("queryTrace").innerHTML = retrievalTrace
+    .map(
+      (item, index) => `
+        <article class="query-step">
+          <span>${String(index + 1).padStart(2, "0")}</span>
+          <div>
+            <strong>${item.step}</strong>
+            <p>${item.text}</p>
+          </div>
         </article>
       `,
     )

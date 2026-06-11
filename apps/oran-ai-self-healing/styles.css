@@ -317,7 +317,10 @@ h3 {
 .agent-steps,
 .kb-results,
 .timeline,
-.node-detail {
+.node-detail,
+.rag-evidence,
+.retrieval-trace,
+.query-trace {
   display: grid;
   gap: 12px;
 }
@@ -548,6 +551,82 @@ h3 {
   line-height: 1.6;
 }
 
+.diagnosis-full {
+  grid-column: 1 / -1;
+}
+
+.rag-evidence {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.evidence-card,
+.trace-step,
+.query-step,
+.health-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfdfb;
+  padding: 14px;
+}
+
+.evidence-card {
+  display: grid;
+  gap: 9px;
+}
+
+.evidence-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.evidence-card p,
+.trace-step p,
+.query-step p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.signal-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.signal-list span {
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 8px;
+}
+
+.trace-step,
+.query-step {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.query-step {
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.query-step > span {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--accent-strong);
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .confidence {
   display: grid;
   gap: 8px;
@@ -581,6 +660,30 @@ h3 {
 
 .search-box {
   margin-bottom: 14px;
+}
+
+.index-health {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.health-card {
+  display: grid;
+  gap: 6px;
+}
+
+.health-card span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.health-card strong {
+  font-size: 27px;
+}
+
+.health-card small {
+  color: var(--muted);
 }
 
 .search-box input {
@@ -668,6 +771,10 @@ h3 {
   .impact-summary {
     grid-template-columns: 1fr;
   }
+
+  .rag-evidence {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -717,6 +824,14 @@ h3 {
   }
 
   .tool-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .index-health {
+    grid-template-columns: 1fr;
+  }
+
+  .trace-step {
     grid-template-columns: 1fr;
   }
 }
