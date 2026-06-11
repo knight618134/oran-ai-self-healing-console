@@ -164,6 +164,19 @@ The AI Diagnosis and Knowledge Base views now show a productized RAG workflow:
 
 This makes the demo explainable: the UI shows why the AI made a recommendation, not only the final diagnosis text.
 
+## Implemented Backend Scaffold View
+
+The app now includes a `Backend RAG` view that mirrors the local Python scaffold:
+
+- Markdown ingest from `data/home-specs/router-demo.md`
+- JSONL chunk index in `data/indexes/spec_index.jsonl`
+- keyword retrieval through `spectaskai.rag_search`
+- offline grounded answer boundary through `NemotronClient`
+- task API isolation through `OpenProjectClient`
+- local test command for the backend pipeline
+
+This view is intentionally static in the browser, but the commands shown there are backed by runnable local code.
+
 ## Implemented Static Topology Flow
 
 The current topology is still framework-free, but the data model now mirrors the shape expected by React Flow:

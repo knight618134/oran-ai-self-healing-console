@@ -23,6 +23,7 @@
           <button data-view="diagnosis" type="button">AI Diagnosis</button>
           <button data-view="recovery" type="button">Recovery Agent</button>
           <button data-view="knowledge" type="button">Knowledge Base</button>
+          <button data-view="backend" type="button">Backend RAG</button>
         </nav>
         <div class="operator-panel">
           <span class="eyebrow">Current Slice</span>
@@ -219,6 +220,39 @@
                 <span>Search pipeline</span>
               </div>
               <div class="query-trace" id="queryTrace"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="backend">
+          <div class="backend-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Local RAG Pipeline</h2>
+                <span>Python scaffold verified</span>
+              </div>
+              <div class="pipeline-grid" id="pipelineGrid"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>CLI Demo Commands</h2>
+                <span>Safe toy spec</span>
+              </div>
+              <div class="command-list" id="commandList"></div>
+            </section>
+            <section class="panel backend-full">
+              <div class="panel-header">
+                <h2>Grounded Search Result</h2>
+                <span>GNSS timing priority</span>
+              </div>
+              <div class="backend-results" id="backendResults"></div>
+            </section>
+            <section class="panel backend-full">
+              <div class="panel-header">
+                <h2>Agent Boundary</h2>
+                <span>Model + task API isolation</span>
+              </div>
+              <div class="boundary-grid" id="boundaryGrid"></div>
             </section>
           </div>
         </section>

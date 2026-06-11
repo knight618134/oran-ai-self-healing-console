@@ -252,6 +252,71 @@ const indexHealth = [
   { label: "Coverage", value: "82%", note: "RIC / FM / recovery" },
 ];
 
+const backendPipeline = [
+  { label: "Markdown ingest", status: "verified", text: "router-demo.md is chunked into JSONL sections with source and heading metadata." },
+  { label: "Keyword retrieval", status: "verified", text: "Search ranks GNSS, Timing, and Alarm Handling chunks for timing-related questions." },
+  { label: "Grounded answer", status: "verified", text: "Offline model boundary drafts an answer with cited chunks before any live model API is added." },
+  { label: "Unit tests", status: "passing", text: "2 backend tests pass through the local unittest suite." },
+];
+
+const backendCommands = [
+  {
+    label: "Index toy spec",
+    command: "PYTHONPATH=src python3 -m spectaskai.cli ingest data/home-specs/router-demo.md",
+  },
+  {
+    label: "Search local index",
+    command: "PYTHONPATH=src python3 -m spectaskai.cli search \"GNSS timing priority\"",
+  },
+  {
+    label: "Generate grounded answer",
+    command: "PYTHONPATH=src python3 -m spectaskai.cli answer \"What should happen when PTP degrades and GNSS is locked?\"",
+  },
+  {
+    label: "Run backend tests",
+    command: "PYTHONPATH=src python3 -m unittest discover -s tests",
+  },
+];
+
+const backendResults = [
+  {
+    rank: 1,
+    score: "2.145",
+    source: "router-demo / GNSS",
+    text: "GNSS is an optional timing source for the demo radio unit. The system reports lock state, holdover state, and timing source priority.",
+  },
+  {
+    rank: 2,
+    score: "2.1268",
+    source: "router-demo / Timing",
+    text: "PTP is primary. If PTP quality degrades and GNSS is locked, the recovery agent may recommend switching timing priority after human approval.",
+  },
+  {
+    rank: 3,
+    score: "0.5824",
+    source: "router-demo / Alarm Handling",
+    text: "Critical timing alarms include impacted node, current timing source, packet loss, latency, and the last configuration change.",
+  },
+];
+
+const backendBoundaries = [
+  {
+    name: "NemotronClient",
+    role: "Model boundary",
+    text: "Keeps RAG and Agent logic independent from live NIM/Nemotron credentials and payload details.",
+  },
+  {
+    name: "OpenProjectClient",
+    role: "Task API boundary",
+    text: "Isolates task creation and comments from Agent orchestration, making future GitHub Issues/Jira swaps easier.",
+  },
+  {
+    name: "spectaskai.cli",
+    role: "Local demo shell",
+    text: "Provides ingest, search, and answer commands that can later become NemoClaw runtime tools.",
+  },
+];
+
 const baseAgentSteps = [
   { tool: "get_alarm_history", status: "done", text: "Fetched 14 alarms in the last 30 minutes for Factory-A slice." },
   { tool: "get_kpi_snapshot", status: "done", text: "Correlated DU packet loss, RIC latency, and handover failure rate." },
@@ -321,6 +386,7 @@ const viewTitles = {
   diagnosis: "AI Diagnosis Workspace",
   recovery: "Recovery Agent Console",
   knowledge: "RAG Knowledge Base",
+  backend: "Backend RAG Scaffold",
 };
 
 function renderMetrics() {
@@ -703,6 +769,56 @@ function renderKnowledge() {
     .join("");
 }
 
+function renderBackend() {
+  document.getElementById("pipelineGrid").innerHTML = backendPipeline
+    .map(
+      (item) => `
+        <article class="pipeline-card">
+          <span class="status-pill ${item.status === "passing" ? "done" : "normal"}">${item.status}</span>
+          <strong>${item.label}</strong>
+          <p>${item.text}</p>
+        </article>
+      `,
+    )
+    .join("");
+
+  document.getElementById("commandList").innerHTML = backendCommands
+    .map(
+      (item) => `
+        <article class="command-card">
+          <strong>${item.label}</strong>
+          <code>${item.command}</code>
+        </article>
+      `,
+    )
+    .join("");
+
+  document.getElementById("backendResults").innerHTML = backendResults
+    .map(
+      (item) => `
+        <article class="backend-result">
+          <span class="status-pill normal">rank ${item.rank}</span>
+          <strong>${item.source}</strong>
+          <span class="meta">score=${item.score}</span>
+          <p>${item.text}</p>
+        </article>
+      `,
+    )
+    .join("");
+
+  document.getElementById("boundaryGrid").innerHTML = backendBoundaries
+    .map(
+      (item) => `
+        <article class="boundary-card">
+          <span class="eyebrow">${item.role}</span>
+          <strong>${item.name}</strong>
+          <p>${item.text}</p>
+        </article>
+      `,
+    )
+    .join("");
+}
+
 function activateView(viewId) {
   document.querySelectorAll(".view").forEach((view) => view.classList.toggle("active", view.id === viewId));
   document.querySelectorAll(".nav-tabs button").forEach((button) => button.classList.toggle("active", button.dataset.view === viewId));
@@ -767,6 +883,7 @@ function init() {
   renderDiagnosis();
   renderRecoveryWorkflow();
   renderKnowledge();
+  renderBackend();
   wireInteractions();
 }
 

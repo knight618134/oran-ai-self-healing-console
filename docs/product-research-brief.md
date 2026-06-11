@@ -240,6 +240,8 @@ createOpenProjectTask({ projectId, subject, description, severity })
 - [ ] 建立 local tool manifest
 - [ ] Agent dry-run demo
 - [ ] 工具執行紀錄回寫前端
+- [x] 建立本地 RAG backend scaffold
+- [x] 前端展示 Backend RAG readiness
 
 ## 8. 面試說法
 

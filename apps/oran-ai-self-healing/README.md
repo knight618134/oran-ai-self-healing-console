@@ -13,6 +13,7 @@
 - RAG Evidence：引用來源、匹配訊號、retrieval trace、index health
 - Recovery Agent：展示 tool calling、step trace、human approval gate、Gmail / Discord / OpenProject mock tools
 - Knowledge Base：RAG 檢索 SOP、runbook、alarm guide
+- Backend RAG：展示本地 Python RAG scaffold、CLI commands、測試狀態與 grounded answer 結果
 
 ## 如何打開
 
