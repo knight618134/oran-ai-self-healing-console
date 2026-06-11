@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5G O-RAN AI Self-Healing Console</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand">
+          <div class="brand-mark">OR</div>
+          <div>
+            <strong>O-RAN HealOps</strong>
+            <span>AI 自癒維運平台</span>
+          </div>
+        </div>
+        <nav class="nav-tabs" id="navTabs">
+          <button class="active" data-view="dashboard" type="button">Dashboard</button>
+          <button data-view="topology" type="button">Topology</button>
+          <button data-view="alarms" type="button">Alarm Center</button>
+          <button data-view="diagnosis" type="button">AI Diagnosis</button>
+          <button data-view="recovery" type="button">Recovery Agent</button>
+          <button data-view="knowledge" type="button">Knowledge Base</button>
+        </nav>
+        <div class="operator-panel">
+          <span class="eyebrow">Current Slice</span>
+          <strong>URLLC / Factory-A</strong>
+          <small>Near-RT RIC policy guard: enabled</small>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">5G O-RAN AI Self-Healing PoC</span>
+            <h1 id="viewTitle">Network Health Dashboard</h1>
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-button" id="simulateBtn" type="button" aria-label="Simulate event" title="Simulate event">↻</button>
+            <button class="primary-button" id="runAgentBtn" type="button">Run Recovery Agent</button>
+          </div>
+        </header>
+
+        <section class="view active" id="dashboard">
+          <div class="metric-grid" id="metricGrid"></div>
+          <div class="split-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Live KPI Trend</h2>
+                <span>Last 30 min</span>
+              </div>
+              <div class="chart" id="kpiChart" aria-label="KPI chart"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Active Incidents</h2>
+                <span id="incidentCount"></span>
+              </div>
+              <div class="incident-list" id="incidentList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="topology">
+          <div class="topology-layout">
+            <section class="network-map panel">
+              <div class="panel-header">
+                <h2>O-RAN Topology</h2>
+                <span>CU / DU / RU / RIC</span>
+              </div>
+              <div class="topology-canvas" id="topologyCanvas"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Node Inspector</h2>
+                <span id="selectedNodeLabel">DU-TPE-07</span>
+              </div>
+              <div class="node-detail" id="nodeDetail"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="alarms">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Fault Management Queue</h2>
+              <div class="segmented" id="severityFilter">
+                <button class="active" data-filter="all" type="button">All</button>
+                <button data-filter="critical" type="button">Critical</button>
+                <button data-filter="major" type="button">Major</button>
+              </div>
+            </div>
+            <div class="alarm-table" id="alarmTable"></div>
+          </section>
+        </section>
+
+        <section class="view" id="diagnosis">
+          <div class="diagnosis-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>AI Root Cause Analysis</h2>
+                <span>RAG + KPI correlation</span>
+              </div>
+              <div class="diagnosis-card" id="diagnosisCard"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Evidence Timeline</h2>
+                <span>Explainable trace</span>
+              </div>
+              <div class="timeline" id="timeline"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="recovery">
+          <div class="recovery-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Agent Recovery Plan</h2>
+                <span id="agentStatus">Ready</span>
+              </div>
+              <div class="agent-steps" id="agentSteps"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Human Approval Gate</h2>
+                <span>Policy change requires review</span>
+              </div>
+              <div class="approval-card">
+                <span class="status-pill warning">Pending Approval</span>
+                <h3>Adjust xApp handover threshold</h3>
+                <p>Temporarily relax A3 offset from 3 dB to 2 dB for DU-TPE-07 serving cells during congestion window.</p>
+                <div class="approval-actions">
+                  <button class="secondary-button" type="button">Reject</button>
+                  <button class="primary-button" type="button">Approve Dry Run</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="knowledge">
+          <div class="knowledge-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <h2>RAG Knowledge Base</h2>
+                <span>SOP / runbook / alarm guide</span>
+              </div>
+              <div class="search-box">
+                <input id="kbSearch" type="search" value="DU packet loss and Near-RT RIC latency" aria-label="Search knowledge base" />
+                <button class="primary-button" id="kbSearchBtn" type="button">Search</button>
+              </div>
+              <div class="kb-results" id="kbResults"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-header">
+                <h2>Prompt Template</h2>
+                <span>Structured output</span>
+              </div>
+              <pre class="prompt-box">Given O-RAN alarms, KPI snapshots, and SOP evidence:
+1. summarize the incident
+2. infer likely root causes
+3. propose reversible recovery actions
+4. mark actions requiring human approval</pre>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
